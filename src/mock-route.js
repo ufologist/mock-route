@@ -62,7 +62,38 @@ function sendMockData(request, response, mockResponse) {
             .jsonp(mockResponseData);
 }
 
+/**
+ * 将 mock 配置按照 module 进行分组
+ * 
+ * @param {object} mockConfig
+ * @return {object}
+ */
+function groupApiByModuleName(mockConfig) {
+    // clone mockConfig
+    var _mockConfig = JSON.parse(JSON.stringify(mockConfig));
+
+    var apiMockConifg = _mockConfig.api;
+    for (var routeKey in apiMockConifg) {
+        var mock = apiMockConifg[routeKey];
+        // 分组了就不需要原来的属性了
+        delete apiMockConifg[routeKey];
+
+        var moduleName = '';
+        if (mock.info && mock.info.module) {
+            moduleName = mock.info.module;
+        }
+        if (!apiMockConifg[moduleName]) {
+            apiMockConifg[moduleName] = {};
+        }
+
+        apiMockConifg[moduleName][routeKey] = mock;
+    }
+
+    return _mockConfig;
+}
+
 module.exports = {
     getMockConfig: getMockConfig,
-    generateRouteConfig: generateRouteConfig
+    generateRouteConfig: generateRouteConfig,
+    groupApiByModuleName: groupApiByModuleName
 };

@@ -10,6 +10,9 @@ var CORS_HEADER = {
 
 /**
  * 借用 jQuery.isEmptyObject
+ * 
+ * @param {object} obj
+ * @return {boolean}
  */
 function isEmptyObject(obj) {
     var name;
