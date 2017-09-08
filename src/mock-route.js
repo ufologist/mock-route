@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 
 var stripJsonComments = require('strip-json-comments');
 var Mock = require('mockjs');
@@ -7,16 +8,31 @@ var validateRequest = require('./validate-request');
 var util = require('./util');
 
 /**
- * 读取 _mockserver.json 配置文件
+ * 读取 _mockserver.json 或者 _mockserver.js 配置文件
  * 
- * @param {string} mockConfigFile
+ * @param {string} mockConfigFilePath
  * @return {object}
  */
-function getMockConfig(mockConfigFile) {
-    // 不使用 require('./_mockserver.json') 因为他会缓存文件的内容, 并不是每次都重新读取
-    var mockConfigContent = fs.readFileSync(mockConfigFile, {encoding: 'utf-8'});
-    // 通过 stripJsonComments 让 JSON 文件中可以使用注释
-    return JSON.parse(stripJsonComments(mockConfigContent));
+function getMockConfig(mockConfigFilePath) {
+    var ext = path.extname(mockConfigFilePath);
+
+    var mockConfig = {};
+    try {
+        if (ext == '.json') {
+            var mockConfigContent = fs.readFileSync(mockConfigFilePath, {encoding: 'utf-8'});
+            // 通过 stripJsonComments 让 JSON 文件中可以使用注释
+            mockConfig = JSON.parse(stripJsonComments(mockConfigContent));
+        } else if (ext == '.js') {
+            // https://nodejs.org/api/modules.html#modules_require_cache
+            delete require.cache[path.resolve(mockConfigFilePath)];
+            mockConfig = require(mockConfigFilePath);
+        }
+    } catch (error) {
+        console.error('HTTP 接口的 Mock 数据配置有问题', mockConfigFilePath);
+        console.error(error);
+    }
+
+    return mockConfig;
 }
 
 /**

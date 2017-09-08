@@ -9,7 +9,7 @@
 [changelog-image]: https://img.shields.io/badge/CHANGE-LOG-blue.svg?style=flat-square
 [changelog-url]: https://github.com/ufologist/mock-route/blob/master/CHANGELOG.md
 
-读取 [_mockserver.json](https://github.com/ufologist/puer-mock#config) 配置文件, 生成 puer 的 [route config](https://github.com/leeluolee/puer#mock-request).
+读取 [_mockserver](https://github.com/ufologist/puer-mock#config).json(或者.js) 配置文件, 生成 puer 的 [route config](https://github.com/leeluolee/puer#mock-request).
 
 ## Usage
 
@@ -18,6 +18,9 @@ var mockRoute = require('mock-route');
 
 // read _mockserver.json config file
 var mockConfig = mockRoute.getMockConfig('./_mockserver.json');
+// or read _mockserver.js config file
+// var mockConfig = mockRoute.getMockConfig('./_mockserver.js');
+
 // generate puer route config
 var routeConfig = mockRoute.generateRouteConfig(mockConfig);
 ```
