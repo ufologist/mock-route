@@ -1,5 +1,9 @@
 # CHANGELOG
 
+* v1.2.0 2017-9-8
+
+  增强跨域请求的设置
+
 * v1.1.0 2017-9-8
 
   将 `groupApiByModuleName` 方法也从 [puer-mock](https://github.com/ufologist/puer-mock) 项目中移过来

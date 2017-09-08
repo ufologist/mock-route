@@ -40,6 +40,8 @@ function generateRouteConfig(mockConfig) {
                     });
                 };
             })(mock);
+
+            // addOptionRoute(routeConfig, routeKey);
         }
     }
 
@@ -51,15 +53,39 @@ function generateRouteConfig(mockConfig) {
  */
 function sendMockData(request, response, mockResponse) {
     var mockResponseData = Mock.mock(mockResponse);
-    // enable CORS
-    // https://github.com/expressjs/cors
-    // 由于跨域的 PUT, DELETE 请求需要回应一个 OPTIONS 做 preflight 请求,
-    // 但是没有配置这样的路由, 因此没有办法做跨域的 PUT, DELETE 请求
-    response.set(util.CORS_HEADER)
-            // 直接使用 JSONP 方式, 没有 JSONP 参数时生成 JSON, 有 JSONP 参数则生成 JSONP
-            // 例如: http://a.com/a => 接口输出 JSON
-            //       http://a.com/a?callback=a => 接口输出 JSONP
-            .jsonp(mockResponseData);
+
+    enableCors(request, response);
+    response.jsonp(mockResponseData);
+}
+
+/**
+ * enable CORS
+ * https://github.com/expressjs/cors
+ * 由于跨域的 PUT, DELETE 请求需要回应一个 OPTIONS 做 preflight 请求,
+ * 但是没有配置这样的路由, 如果确实有需要, 可以使用 addOptionRoute 方法
+ */
+function enableCors(request, response) {
+    response.set(util.getCorsHeader(request));
+}
+
+/**
+ * 为每一个 mock route 添加 options 路由来允许跨域请求
+ * 
+ * XXX 这个有必要吗? 先实现在这里吧, 感觉没那么必要
+ */
+function addOptionRoute(routeConfig, routeKey) {
+    var tmp = routeKey.split(/\s+/);
+    var path = '';
+    if (tmp.length > 1) {
+        path = tmp[1];
+    } else {
+        path = routeKey;
+    }
+
+    routeConfig['options ' + path] = function(request, response, next) {
+        enableCors(request, response);
+        response.sendStatus(200);
+    };
 }
 
 /**
@@ -95,5 +121,6 @@ function groupApiByModuleName(mockConfig) {
 module.exports = {
     getMockConfig: getMockConfig,
     generateRouteConfig: generateRouteConfig,
-    groupApiByModuleName: groupApiByModuleName
+    groupApiByModuleName: groupApiByModuleName,
+    enableCors: enableCors
 };

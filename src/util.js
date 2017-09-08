@@ -1,12 +1,22 @@
 /**
  * 支持跨域的 header 设置
  */
-var CORS_HEADER = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    'Access-Control-Allow-Headers': 'X-Requested-With, Content-Type',
-    'Access-Control-Allow-Credentials': 'true'
-};
+function getCorsHeader(request) {
+    var origin = request.get('origin');
+    var accessControlRequestHeaders = request.get('Access-Control-Request-Headers');
+
+    var header = {
+        'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        'Access-Control-Allow-Credentials': 'true'
+    };
+    header['Access-Control-Allow-Origin'] = origin ? origin : '*';
+
+    if (accessControlRequestHeaders) {
+        header['Access-Control-Allow-Headers'] = accessControlRequestHeaders;
+    }
+
+    return header;
+}
 
 /**
  * 借用 jQuery.isEmptyObject
@@ -23,6 +33,6 @@ function isEmptyObject(obj) {
 }
 
 module.exports = {
-    CORS_HEADER: CORS_HEADER,
+    getCorsHeader: getCorsHeader,
     isEmptyObject: isEmptyObject
 };
