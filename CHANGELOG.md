@@ -1,5 +1,9 @@
 # CHANGELOG
 
+* v1.3.1 2017-9-8
+
+  * [fix] `.js` 的 mock 配置文件应该使用绝对路径来 `require`
+
 * v1.3.0 2017-9-8
 
   * [feat] 新增支持 `.js` 的 mock 配置文件

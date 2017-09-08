@@ -23,8 +23,9 @@ function getMockConfig(mockConfigFilePath) {
             // 通过 stripJsonComments 让 JSON 文件中可以使用注释
             mockConfig = JSON.parse(stripJsonComments(mockConfigContent));
         } else if (ext == '.js') {
+            mockConfigFilePath = path.resolve(mockConfigFilePath);
             // https://nodejs.org/api/modules.html#modules_require_cache
-            delete require.cache[path.resolve(mockConfigFilePath)];
+            delete require.cache[mockConfigFilePath];
             mockConfig = require(mockConfigFilePath);
         }
     } catch (error) {
