@@ -1,0 +1,29 @@
+{
+  "name": "mock-route",
+  "version": "1.0.0",
+  "description": "generate puer route config",
+  "main": "src/mock-route.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ufologist/mock-route.git"
+  },
+  "keywords": [
+    "mock",
+    "route",
+    "puer"
+  ],
+  "author": "Sun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ufologist/mock-route/issues"
+  },
+  "homepage": "https://github.com/ufologist/mock-route",
+  "dependencies": {
+    "mockjs": "^1.0.1-beta3",
+    "querystring": "^0.2.0",
+    "strip-json-comments": "^2.0.1"
+  }
+}
