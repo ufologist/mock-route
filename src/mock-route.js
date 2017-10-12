@@ -3,6 +3,7 @@ var path = require('path');
 
 var stripJsonComments = require('strip-json-comments');
 var Mock = require('mockjs');
+var httpProxy = require('http-proxy');
 
 var validateRequest = require('./validate-request');
 var util = require('./util');
@@ -51,11 +52,32 @@ function generateRouteConfig(mockConfig) {
         } else {
             // 注意要使用闭包固定住 apiMockConifg 中的数据
             routeConfig[routeKey] = (function(mock) {
-                return function(request, response, next) {
-                    validateRequest(request, response, mock.request, function() {
-                        sendMockData(request, response, mock.response);
-                    });
-                };
+                if (mock.proxy) { // 代理接口
+                    return function(request, response, next) {
+                        // 必须每个 Mock 请求都使用一个新的 proxy
+                        // 不然其他 mock 配置的 proxy 选项会影响到整个 proxy 实例
+                        var proxy = httpProxy.createProxyServer({
+                            // changes the host header to the target URL
+                            changeOrigin: true
+                        });
+
+                        var proxyOption = typeof mock.proxy == 'string' ? {
+                            target: mock.proxy
+                        } : mock.proxy;
+
+                        // 使用 http-proxy 来实现代理功能,
+                        // 也可以使用 axio 来代理请求
+                        proxy.web(request, response, proxyOption, function(error) {
+                            response.send(error);
+                        });
+                    }
+                } else { // Mock 接口
+                    return function(request, response, next) {
+                        validateRequest(request, response, mock.request, function() {
+                            sendMockData(request, response, mock.response);
+                        });
+                    };
+                }
             })(mock);
 
             // addOptionRoute(routeConfig, routeKey);

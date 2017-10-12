@@ -1,6 +1,6 @@
 {
   "name": "mock-route",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "generate puer route config",
   "main": "src/mock-route.js",
   "scripts": {
@@ -13,7 +13,8 @@
   "keywords": [
     "mock",
     "route",
-    "puer"
+    "puer",
+    "proxy"
   ],
   "author": "Sun",
   "license": "MIT",
@@ -22,6 +23,7 @@
   },
   "homepage": "https://github.com/ufologist/mock-route",
   "dependencies": {
+    "http-proxy": "^1.16.2",
     "mockjs": "^1.0.1-beta3",
     "querystring": "^0.2.0",
     "strip-json-comments": "^2.0.1"
