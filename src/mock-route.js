@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 
 var stripJsonComments = require('strip-json-comments');
+var JSON5 = require('json5');
 var Mock = require('mockjs');
 var httpProxy = require('http-proxy');
 
@@ -15,23 +16,33 @@ var util = require('./util');
  * @return {object}
  */
 function getMockConfig(mockConfigFilePath) {
-    var ext = path.extname(mockConfigFilePath);
-
     var mockConfig = {};
-    try {
-        if (ext == '.json') {
+
+    var ext = path.extname(mockConfigFilePath);
+    if (ext == '.json') {
+        try {
             var mockConfigContent = fs.readFileSync(mockConfigFilePath, {encoding: 'utf-8'});
             // 通过 stripJsonComments 让 JSON 文件中可以使用注释
+            // 先通过标准的 JSON 库来解析, 如果有异常再使用 JSON5 库来解析增强容错性
             mockConfig = JSON.parse(stripJsonComments(mockConfigContent));
-        } else if (ext == '.js') {
+        } catch (error) {
+            try {
+                mockConfig = JSON5.parse(mockConfigContent);
+            } catch (error) {
+                console.error('HTTP 接口的 Mock 数据配置有问题', mockConfigFilePath);
+                console.error(error);
+            }
+        }
+    } else if (ext == '.js') {
+        try {
             mockConfigFilePath = path.resolve(mockConfigFilePath);
             // https://nodejs.org/api/modules.html#modules_require_cache
             delete require.cache[mockConfigFilePath];
             mockConfig = require(mockConfigFilePath);
+        } catch (error) {
+            console.error('HTTP 接口的 Mock 数据配置有问题', mockConfigFilePath);
+            console.error(error);
         }
-    } catch (error) {
-        console.error('HTTP 接口的 Mock 数据配置有问题', mockConfigFilePath);
-        console.error(error);
     }
 
     return mockConfig;

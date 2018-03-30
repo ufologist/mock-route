@@ -1,6 +1,6 @@
 {
   "name": "mock-route",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "generate puer route config",
   "main": "src/mock-route.js",
   "scripts": {
@@ -24,6 +24,7 @@
   "homepage": "https://github.com/ufologist/mock-route",
   "dependencies": {
     "http-proxy": "^1.16.2",
+    "json5": "^1.0.1",
     "mockjs": "^1.0.1-beta3",
     "querystring": "^0.2.0",
     "strip-json-comments": "^2.0.1"
