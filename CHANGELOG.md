@@ -1,5 +1,22 @@
 # CHANGELOG
 
+* v1.5.0 2019-1-3
+
+  * [feat] 新增 `function` 类型的 mock 配置, 用于实现完全自定义 mock
+
+    例如
+
+    ```javascript
+    // 必须使用 js 类型的 mock 文件, 例如 news.js
+    "GET /api/new/:id": function(request, response, next) {
+        // 可以返回对象, 达到动态组装 mock 数据的目的
+        return {
+            id: request.params.id,
+            name: '@cname'
+        };
+    }
+    ```
+
 * v1.4.1 2018-3-30
 
   * [fix] 使用 `JSON5` 来解析 mock 数据配置文件, 增强配置的容错性

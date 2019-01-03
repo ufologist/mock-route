@@ -1,6 +1,6 @@
 {
   "name": "mock-route",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "generate puer route config",
   "main": "src/mock-route.js",
   "scripts": {

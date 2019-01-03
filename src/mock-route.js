@@ -57,13 +57,26 @@ function generateRouteConfig(mockConfig) {
     var apiMockConifg = mockConfig.api;
     for (var routeKey in apiMockConifg) {
         var mock = apiMockConifg[routeKey];
+        if (!mock) {
+            console.warn(routeKey + ' is ' + mock);
+            continue;
+        }
 
         if (mock.disabled) {
             console.info(routeKey + ' disabled');
         } else {
             // 注意要使用闭包固定住 apiMockConifg 中的数据
             routeConfig[routeKey] = (function(mock) {
-                if (mock.proxy) { // 代理接口
+                if (typeof mock === 'function') { // 完全自定义处理 mock 请求
+                    return function(request, response, next) {
+                        var result = mock(request, response, next);
+                        // 如果函数返回对象, 则会走原有的发送 mock 数据的逻辑
+                        // 即可以实现动态地组装 mock 数据
+                        if (result) {
+                            sendMockData(request, response, result);
+                        }
+                    };
+                } else if (mock.proxy) { // 代理接口
                     return function(request, response, next) {
                         // 必须每个 Mock 请求都使用一个新的 proxy
                         // 不然其他 mock 配置的 proxy 选项会影响到整个 proxy 实例
@@ -147,6 +160,14 @@ function addOptionRoute(routeConfig, routeKey) {
 function groupApiByModuleName(mockConfig) {
     // clone mockConfig
     var _mockConfig = JSON.parse(JSON.stringify(mockConfig));
+
+    // 找到 function 类型的 mock 补充到 clone 的对象中
+    for (var routeKey in mockConfig.api) {
+        var mock = mockConfig.api[routeKey];
+        if (typeof mock === 'function') {
+            _mockConfig.api[routeKey] = '[function]';
+        }
+    }
 
     var apiMockConifg = _mockConfig.api;
     for (var routeKey in apiMockConifg) {
